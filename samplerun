@@ -1,0 +1,205 @@
+-- first sample run -- (NNData.py)
+
+>>> from NNData import NNData, Set, Order
+>>> import numpy as np
+>>> features = [[0, 0], [1, 0], [0, 1], [1, 1]]
+>>> labels = [[0], [1], [1], [0]]
+>>> data = NNData(features, labels)
+>>> print(f"Number of samples: {data.number_of_samples()}")
+Number of samples: 4
+>>> print(f"Number of training samples: {data.number_of_samples(Set.TRAIN)}")
+Number of training samples: 3
+>>> print(f"Number of testing samples: {data.number_of_samples(Set.TEST)}")
+Number of testing samples: 1
+>>> data.prime_data(order=Order.SHUFFLE)
+>>> print("Training data:")
+Training data:
+>>> for _ in range(data.number_of_samples(Set.TRAIN)):
+...     item = data.get_one_item(Set.TRAIN)
+...     if item:
+...         print(f"Feature: {item[0]}, Label: {item[1]}")
+...
+Feature: [1. 0.], Label: [1.]
+Feature: [0. 1.], Label: [1.]
+Feature: [0. 0.], Label: [0.]
+>>> data.split_set(0.5)
+>>> print(f"After changing train factor to 0.5:")
+After changing train factor to 0.5:
+>>> print(f"Number of training samples: {data.number_of_samples(Set.TRAIN)}")
+Number of training samples: 2
+>>> print(f"Number of testing samples: {data.number_of_samples(Set.TEST)}")
+Number of testing samples: 2
+>>> data.prime_data(Set.TEST, Order.SEQUENTIAL)
+>>> print("Test data:")
+Test data:
+>>> while not data.pool_is_empty(Set.TEST):
+...     item = data.get_one_item(Set.TEST)
+...     print(f"Feature: {item[0]}, Label: {item[1]}")
+...
+Feature: [0. 1.], Label: [1.]
+Feature: [1. 1.], Label: [0.]
+>>> exit()
+
+-- second sample run -- (NNData.py)
+
+>>> from NNData import NNData, Set, Order
+>>> import numpy as np
+>>> features = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12]]
+>>> labels = [[0], [1], [0], [1]]
+>>> data = NNData(features, labels, 0.75)
+>>> print(f"Initial number of samples: {data.number_of_samples()}")
+Initial number of samples: 4
+>>> print(f"Initial training samples: {data.number_of_samples(Set.TRAIN)}")
+Initial training samples: 3
+>>> print(f"Initial testing samples: {data.number_of_samples(Set.TEST)}")
+Initial testing samples: 1
+>>> data.prime_data(Set.TRAIN, Order.SEQUENTIAL)
+>>> print("Training data (Sequential):")
+Training data (Sequential):
+>>> while not data.pool_is_empty(Set.TRAIN):
+...     item = data.get_one_item(Set.TRAIN)
+...     print(f"Feature: {item[0]}, Label: {item[1]}")
+...
+Feature: [ 1.  2.  3.], Label: [0.]
+Feature: [ 4.  5.  6.], Label: [1.]
+Feature: [ 7.  8.  9.], Label: [0.]
+>>> data.prime_data(Set.TEST, Order.RANDOM)
+>>> print("Test data (Random):")
+Test data (Random):
+>>> while not data.pool_is_empty(Set.TEST):
+...     item = data.get_one_item(Set.TEST)
+...     print(f"Feature: {item[0]}, Label: {item[1]}")
+...
+Feature: [10. 11. 12.], Label: [1.]
+>>> print("Attempting to load mismatched data:")
+Attempting to load mismatched data:
+>>> try:
+...     data.load_data([[1, 2], [3, 4]], [[0], [1], [0]])
+... except ValueError as e:
+...     print(f"ValueError: {e}")
+...
+ValueError: Features and labels must have the same length.
+>>> print("Loading new valid data:")
+Loading new valid data:
+>>> data.load_data([[0, 0], [0, 1], [1, 0], [1, 1]], [[0], [1], [1], [0]])
+>>> print(f"New total samples: {data.number_of_samples()}")
+New total samples: 4
+>>> data.split_set(0.5)
+>>> print(f"New training samples: {data.number_of_samples(Set.TRAIN)}")
+New training samples: 2
+>>> print(f"New testing samples: {data.number_of_samples(Set.TEST)}")
+New testing samples: 2
+>>> data.prime_data(order=Order.SHUFFLE)
+>>> print("All data after shuffle:")
+All data after shuffle:
+>>> for target_set in [Set.TRAIN, Set.TEST]:
+...     print(f"{target_set.name} data:")
+...     while not data.pool_is_empty(target_set):
+...         item = data.get_one_item(target_set)
+...         print(f"Feature: {item[0]}, Label: {item[1]}")
+...
+TRAIN data:
+Feature: [0. 1.], Label: [1.]
+Feature: [1. 0.], Label: [1.]
+TEST data:
+Feature: [1. 1.], Label: [0.]
+Feature: [0. 0.], Label: [0.]
+>>> exit()
+
+-- first sample run -- (DoublyLinkedList.py)
+
+import DoublyLinkedList
+new_list = DoublyLinkedList.DoublyLinkedList()
+print("Is the list empty?", new_list.is_empty())
+Is the list empty? True
+new_list.add_to_head(10)
+new_list.add_to_head(20)
+print("Added 20 and 10 to head. Current head data:", new_list.curr_data)
+Added 20 and 10 to head. Current head data: 20
+new_list.reset_to_head()
+print("Reset to head. Current head data:", new_list.curr_data)
+Reset to head. Current head data: 20
+new_list.add_after_current(15)
+print("Added 15 after current (head). Current node data:", new_list.curr_data)
+Added 15 after current (head). Current node data: 20
+new_list.move_forward()
+print("Moved forward. Current node data:", new_list.curr_data)
+Moved forward. Current node data: 15
+removed_data = new_list.remove_after_current()
+print("Removed node after current. Removed data:", removed_data)
+Removed node after current. Removed data: 10
+new_list.reset_to_head()
+removed_head_data = new_list.remove_from_head()
+print("Removed from head. Removed data:", removed_head_data)
+Removed from head. Removed data: 20
+new_list.add_to_head(30)
+new_list.add_to_head(40)
+new_list.add_after_current(35)
+print("Added 40, 30, and 35 after current (head). Current node data:", new_list.curr_data)
+Added 40, 30, and 35 after current (head). Current node data: 40
+new_list.reset_to_tail()
+print("Reset to tail. Current tail data:", new_list.curr_data)
+Reset to tail. Current tail data: 15
+found_data = new_list.find(30)
+print("Found data in the list:", found_data)
+Found data in the list: 30
+removed_specific_data = new_list.remove(35)
+print("Removed specific data (35). Removed data:", removed_specific_data)
+Removed specific data (35). Removed data: 35
+print("Final state of the list:")
+Final state of the list:
+current = new_list.head
+while current:
+    print(current.data)
+    current = current.next
+
+40
+30
+15
+print("Is the list empty?", new_list.is_empty())
+Is the list empty? False
+
+-- second sample run -- (DoublyLinkedList.py)
+
+import DoublyLinkedList
+new_list = DoublyLinkedList.DoublyLinkedList()
+new_list.add_to_head(10)
+new_list.add_to_head(20)
+new_list.add_after_current(15)
+new_list.move_forward()
+print("Current Data:", new_list.curr_data)
+Current Data: 15
+new_list.remove_from_head()
+20
+print("Current Data after removing head:", new_list.curr_data)
+Current Data after removing head: 15
+new_list.reset_to_head()
+print("Current Data after resetting to head:", new_list.curr_data)
+Current Data after resetting to head: 15
+print("Is the list empty?", new_list.is_empty())
+Is the list empty? False
+
+-- third sample run -- (DoublyLinkedList.py)
+
+import DoublyLinkedList
+new_list = DoublyLinkedList.DoublyLinkedList()
+new_list.add_to_head(10)
+new_list.add_to_head(20)
+new_list.add_to_head(30)
+print("Current list after adding to head:", [new_list.head.data, new_list.head.next.data, new_list.head.next.next.data])
+Current list after adding to head: [30, 20, 10]
+new_list.reset_to_head()
+new_list.add_after_current(25)
+print("Current list after adding after current:", [new_list.head.data, new_list.head.next.data, new_list.head.next.next.data, new_list.head.next.next.next.data])
+Current list after adding after current: [30, 25, 20, 10]
+removed_data = new_list.remove_from_head()
+print(f"Removed data from head: {removed_data}")
+Removed data from head: 30
+print("Current list after removing from head:", [new_list.head.data, new_list.head.next.data, new_list.head.next.next.data])
+Current list after removing from head: [25, 20, 10]
+new_list.reset_to_head()
+new_list.move_forward()
+new_list.remove_after_current()
+10
+print("Current list after removing after current:", [new_list.head.data, new_list.head.next.data])
+Current list after removing after current: [25, 20]
